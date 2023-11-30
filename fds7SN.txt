@@ -1,0 +1,130 @@
+Name: Shubham Ganesh Nikumbh
+RollNo:22569
+
+
+#include <iostream>
+using namespace std;
+
+struct Student {
+    string prn;
+    string name;
+    Student* next;
+};
+
+class PinnacleClub {
+private:
+    Student* president;
+    Student* secretary;
+
+public:
+    PinnacleClub() {
+        president = new Student();
+        secretary = new Student();
+        president->next = secretary;
+        secretary->next = nullptr;
+    }
+
+    void addMember(string prn, string name) {
+        Student* newMember = new Student();
+        newMember->prn = prn;
+        newMember->name = name;
+
+        newMember->next = president->next;
+        president->next = newMember;
+    }
+
+    void deleteMember(string prn) {
+        Student* current = president;
+        while (current->next != secretary) {
+            if (current->next->prn == prn) {
+                Student* temp = current->next;
+                current->next = current->next->next;
+                delete temp;
+                cout << "Member with PRN " << prn << " deleted successfully." << endl;
+                return;
+            }
+            current = current->next;
+        }
+        cout << "Member with PRN " << prn << " not found." << endl;
+    }
+
+    int getTotalMembers() {
+        int count = 0;
+        Student* current = president->next;
+        while (current != secretary) {
+            count++;
+            current = current->next;
+        }
+        return count;
+    }
+
+    void displayMembers() {
+        Student* current = president->next;
+        while (current != secretary) {
+            cout << "PRN: " << current->prn << ", Name: " << current->name << endl;
+            current = current->next;
+        }
+    }
+
+    void displayReverse(Student* current) {
+        if (current == secretary) {
+            return;
+        }
+        displayReverse(current->next);
+        cout << "PRN: " << current->prn << ", Name: " << current->name << endl;
+    }
+
+    void concatenateLists(PinnacleClub& otherClub) {
+        Student* current = president->next;
+        while (current->next != secretary) {
+            current = current->next;
+        }
+        current->next = otherClub.president->next;
+    }
+};
+
+int main() {
+    PinnacleClub club1;
+    PinnacleClub club2;
+
+    int choice;
+    string prn, name;
+
+    do {
+        cout << "\n1. Add Member\n2. Delete Member\n3. Display Members\n4. Concatenate Lists\n5. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                cout << "Enter PRN: ";
+                cin >> prn;
+                cout << "Enter Name: ";
+                cin >> name;
+                club1.addMember(prn, name);
+                break;
+            case 2:
+                cout << "Enter PRN to delete: ";
+                cin >> prn;
+                club1.deleteMember(prn);
+                break;
+            case 3:
+                cout << "Club Members:" << endl;
+                club1.displayMembers();
+                break;
+            case 4:
+                club1.concatenateLists(club2);
+                cout << "Lists concatenated." << endl;
+                break;
+            case 5:
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please enter a valid choice.\n";
+                break;
+        }
+    } while (choice != 5);
+
+    return 0;
+}
+

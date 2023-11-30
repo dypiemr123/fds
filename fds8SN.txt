@@ -1,0 +1,172 @@
+Name: Shubham Nikumbh
+Roll:22569
+
+
+#include <iostream>
+#include <unordered_set>
+using namespace std;
+
+struct Student {
+    int rollNumber;
+    bool likesVanilla;
+    bool likesButterscotch;
+    Student* next;
+};
+
+class IceCreamPreference {
+private:
+    Student* headVanilla;
+    Student* headButterscotch;
+
+public:
+    IceCreamPreference() {
+        headVanilla = nullptr;
+        headButterscotch = nullptr;
+    }
+
+    void addStudent(int roll, bool likesVanilla, bool likesButterscotch) {
+        Student* newStudent = new Student();
+        newStudent->rollNumber = roll;
+        newStudent->likesVanilla = likesVanilla;
+        newStudent->likesButterscotch = likesButterscotch;
+
+        newStudent->next = nullptr;
+
+        if (likesVanilla) {
+            newStudent->next = headVanilla;
+            headVanilla = newStudent;
+        }
+
+        if (likesButterscotch) {
+            newStudent->next = headButterscotch;
+            headButterscotch = newStudent;
+        }
+    }
+
+    void displayStudents(Student* head) {
+        if (head == nullptr) {
+            cout << "No students found." << endl;
+            return;
+        }
+
+        cout << "Students: ";
+        while (head != nullptr) {
+            cout << head->rollNumber << " ";
+            head = head->next;
+        }
+        cout << endl;
+    }
+
+    void displayBothLiked() {
+        unordered_set<int> setVanilla;
+        Student* current = headVanilla;
+
+        while (current != nullptr) {
+            setVanilla.insert(current->rollNumber);
+            current = current->next;
+        }
+
+        cout << "Students who like both Vanilla and Butterscotch: ";
+        current = headButterscotch;
+        while (current != nullptr) {
+            if (setVanilla.find(current->rollNumber) != setVanilla.end()) {
+                cout << current->rollNumber << " ";
+            }
+            current = current->next;
+        }
+        cout << endl;
+    }
+
+    void displayEitherOrNotBothLiked() {
+        unordered_set<int> setUnion;
+        unordered_set<int> setIntersection;
+        Student* current = headVanilla;
+
+        while (current != nullptr) {
+            setUnion.insert(current->rollNumber);
+            current = current->next;
+        }
+
+        current = headButterscotch;
+        while (current != nullptr) {
+            setUnion.insert(current->rollNumber);
+            if (setUnion.find(current->rollNumber) != setUnion.end()) {
+                setIntersection.insert(current->rollNumber);
+            }
+            current = current->next;
+        }
+
+        cout << "Students who like either Vanilla or Butterscotch or not both: ";
+        for (int roll : setUnion) {
+            if (setIntersection.find(roll) == setIntersection.end()) {
+                cout << roll << " ";
+            }
+        }
+        cout << endl;
+    }
+
+    void displayNeitherLiked() {
+        unordered_set<int> setVanilla;
+        unordered_set<int> setButterscotch;
+        Student* current = headVanilla;
+
+        while (current != nullptr) {
+            setVanilla.insert(current->rollNumber);
+            current = current->next;
+        }
+
+        current = headButterscotch;
+        while (current != nullptr) {
+            setButterscotch.insert(current->rollNumber);
+            current = current->next;
+        }
+
+        unordered_set<int> setNoneLiked;
+        for (int roll : setVanilla) {
+            if (setButterscotch.find(roll) == setButterscotch.end()) {
+                setNoneLiked.insert(roll);
+            }
+        }
+
+        for (int roll : setButterscotch) {
+            if (setVanilla.find(roll) == setVanilla.end()) {
+                setNoneLiked.insert(roll);
+            }
+        }
+
+        cout << "Number of students who like neither Vanilla nor Butterscotch: " << setNoneLiked.size() << endl;
+    }
+};
+
+int main() {
+    IceCreamPreference iceCream;
+
+    int roll;
+    char choice;
+    bool likesVanilla, likesButterscotch;
+
+    do {
+        cout << "\nEnter student details:\n";
+        cout << "Roll Number: ";
+        cin >> roll;
+        cout << "Likes Vanilla ice cream? (Y/N): ";
+        cin >> choice;
+        likesVanilla = (choice == 'Y' || choice == 'y');
+        cout << "Likes Butterscotch ice cream? (Y/N): ";
+        cin >> choice;
+        likesButterscotch = (choice == 'Y' || choice == 'y');
+
+        iceCream.addStudent(roll, likesVanilla, likesButterscotch);
+
+        cout << "Do you want to enter details for another student? (Y/N): ";
+        cin >> choice;
+    } while (choice == 'Y' || choice == 'y');
+
+    cout << "\n";
+    iceCream.displayBothLiked();
+    iceCream.displayEitherOrNotBothLiked();
+    iceCream.displayNeitherLiked();
+
+    return 0;
+}
+
